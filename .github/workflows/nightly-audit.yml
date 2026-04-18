@@ -19,7 +19,7 @@ jobs:
         run: npm install -g unlighthouse-ci
 
       - name: Run Unlighthouse
-        run: unlighthouse-ci --config unlighthouse.config.ts
+        run: unlighthouse-ci --site https://www.queerbadmintonamsterdam.nl --config unlighthouse.config.ts
 
       - name: Upload report
         if: always() # upload even if audit "fails" due to budget
