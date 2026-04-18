@@ -1,0 +1,27 @@
+name: Nightly Lighthouse Audit
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # 3am UTC = 4am or 5am Amsterdam time
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run Unlighthouse
+        run: npx unlighthouse-ci --site https://www.queerbadmintonamsterdam.nl --config unlighthouse.config.ts
+
+      - name: Upload report
+        if: always() # upload even if audit "fails" due to budget
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ github.run_id }}
+          path: .unlighthouse/
+          retention-days: 30
