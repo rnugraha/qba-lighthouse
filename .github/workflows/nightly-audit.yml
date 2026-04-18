@@ -18,6 +18,10 @@ jobs:
       - name: Run Unlighthouse
         run: npx unlighthouse-ci --site https://www.queerbadmintonamsterdam.nl --config unlighthouse.config.ts
 
+      - name: List output
+        if: always()
+        run: ls -la .unlighthouse/ 2>/dev/null || echo ".unlighthouse/ not found"
+
       - name: Upload report
         if: always() # upload even if audit "fails" due to budget
         uses: actions/upload-artifact@v4
