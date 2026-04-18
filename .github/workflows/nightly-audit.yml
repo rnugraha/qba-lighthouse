@@ -28,6 +28,7 @@ jobs:
           name: lighthouse-${{ github.run_id }}
           path: .unlighthouse/
           retention-days: 30
+          include-hidden-files: true
 
       - name: Open issue on failure
         if: failure()
