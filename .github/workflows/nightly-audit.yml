@@ -21,6 +21,29 @@ jobs:
       - name: Run Unlighthouse
         run: unlighthouse-ci --site https://www.queerbadmintonamsterdam.nl --config unlighthouse.config.ts
 
+      - name: Write job summary
+        if: always()
+        run: |
+          node -e "
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('.unlighthouse/ci-result.json', 'utf8'));
+            const score = n => {
+              const pct = Math.round(n * 100);
+              const icon = pct >= 90 ? '🟢' : pct >= 70 ? '🟡' : '🔴';
+              return icon + ' ' + pct;
+            };
+            const rows = results.map(r =>
+              '| ' + [r.path, score(r.performance), score(r.accessibility), score(r['best-practices']), score(r.seo)].join(' | ') + ' |'
+            ).join('\n');
+            const md = [
+              '## Lighthouse Audit Results',
+              '| Page | Performance | Accessibility | Best Practices | SEO |',
+              '|---|---|---|---|---|',
+              rows,
+            ].join('\n');
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, md + '\n');
+          "
+
       - name: Upload report
         if: always() # upload even if audit "fails" due to budget
         uses: actions/upload-artifact@v4
